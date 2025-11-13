@@ -1,0 +1,679 @@
+/* Local Font Imports */
+@font-face {
+    font-family: 'Alien Force';
+    src: url('./fonts/Alien Force.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Haksen';
+    src: url('./fonts/HAKSEN.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Octogram';
+    src: url('./fonts/Octogram-Regular.ttf.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Sevastopol Interface';
+    src: url('./fonts/Sevastopol-Interface.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: black;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    color: white;
+}
+
+#canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block;
+}
+
+/* Loading Screen */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
+}
+
+.loading.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-text {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    animation: pulse 2s infinite;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.loading-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #4a90e2, #7bb3f0);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+}
+
+/* Title Container */
+.title-container {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    text-align: center;
+}
+
+.main-title {
+    font-family: 'haksen', sans-serif;
+    font-size: 10rem;
+    font-weight: bold;
+    color: white;
+    margin: 0 !important;
+    margin-block-start: 0 !important;
+    margin-block-end: 0 !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+    padding: 0;
+    letter-spacing: 40px;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 60px rgba(0, 150, 255, 0.5);
+    display: block;
+    unicode-bidi: isolate;
+    padding-left: 0.67em;
+}
+
+.year {
+    font-family: 'Sevastopol Interface', monospace;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 6px;
+    display: block;
+    margin-top: 10px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.title-container.hidden {
+    display: none;
+}
+
+/* Start Text */
+.start-text {
+    font-family: 'Sevastopol Interface';
+    letter-spacing: 3px;
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    text-align: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 12px;
+    border: 2px solid rgba(255, 255, 255, 0.831);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.start-text:hover {
+    background: rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.start-text.hidden {
+    display: none;
+}
+
+/* Game Menu */
+.game-menu {
+    position: fixed;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 200;
+    text-align: right;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.random-text-container {
+    position: absolute;
+    top: -200px;
+    right: -100px;
+    width: 400px;
+    height: 600px;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.random-text {
+    position: absolute;
+    font-family: 'Octogram', monospace;
+    color: rgba(0, 255, 127, 0.3);
+    font-size: 12px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    pointer-events: none;
+    animation: randomFloat 4s ease-in-out forwards;
+}
+
+.random-text.fade {
+    color: rgba(0, 150, 255, 0.2);
+}
+
+@keyframes randomFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.8);
+    }
+    20% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1);
+    }
+    80% {
+        opacity: 0.8;
+        transform: translateY(-60px) scale(0.9);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(0.7);
+    }
+}
+
+.game-menu.visible {
+    opacity: 1;
+}
+
+.game-menu.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.menu-header {
+    margin-bottom: 60px;
+    animation: fadeInRight 1s ease-out;
+}
+
+.menu-title {
+    font-family: 'Haksen', sans-serif;
+    font-size: 3rem;
+    color: white;
+    margin: 0;
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    animation: fadeInRight 1s ease-out 0.2s both;
+}
+
+.menu-year {
+    font-family: 'Sevastopol Interface', monospace;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 4px;
+    display: block;
+    margin-top: 8px;
+    animation: fadeInRight 1s ease-out 0.4s both;
+}
+
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.menu-option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    cursor: pointer;
+    padding: 12px 20px;
+    border-right: 3px solid transparent;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateX(50px);
+}
+
+.menu-option:nth-child(1) { animation: fadeInRight 0.8s ease-out 0.6s both; }
+.menu-option:nth-child(2) { animation: fadeInRight 0.8s ease-out 0.8s both; }
+.menu-option:nth-child(3) { animation: fadeInRight 0.8s ease-out 1.0s both; }
+.menu-option:nth-child(4) { animation: fadeInRight 0.8s ease-out 1.2s both; }
+.menu-option:nth-child(5) { animation: fadeInRight 0.8s ease-out 1.4s both; }
+
+.menu-option:hover {
+    border-right-color: #00ff7f;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 127, 0.1));
+    transform: translateX(-10px);
+}
+
+.option-number {
+    font-family: 'Sevastopol Interface', monospace;
+    font-size: 1.2rem;
+    color: #00ff7f;
+    font-weight: bold;
+    min-width: 30px;
+    text-align: right;
+}
+
+.option-text {
+    font-family: 'Haksen', sans-serif;
+    font-size: 1.4rem;
+    color: white;
+    letter-spacing: 2px;
+    font-weight: 500;
+}
+
+.menu-option:hover .option-text {
+    color: #00ff7f;
+    text-shadow: 0 0 10px rgba(0, 255, 127, 0.5);
+}
+
+/* Animations */
+
+@keyframes titleGlow {
+    0% { 
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 60px rgba(0, 150, 255, 0.5);
+    }
+    100% { 
+        text-shadow: 0 0 40px rgba(255, 255, 255, 1), 0 0 80px rgba(0, 150, 255, 0.8), 0 0 120px rgba(0, 100, 200, 0.3);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Social Media Icons */
+.social-media {
+    position: fixed;
+    bottom: 30px;
+    right: 80px;
+    display: flex;
+    gap: 20px;
+    z-index: 150;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.social-media.visible {
+    opacity: 1;
+}
+
+.social-media.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.social-icon {
+    width: 25px;
+    height: 25px;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.social-icon svg {
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    color: #00ff7f;
+    transform: translateY(-3px) scale(1.1);
+}
+
+.social-icon[data-platform="instagram"]:hover {
+    color: #E4405F;
+    filter: drop-shadow(0 0 8px rgba(228, 64, 95, 0.5));
+}
+
+.social-icon[data-platform="linkedin"]:hover {
+    color: #0077B5;
+    filter: drop-shadow(0 0 8px rgba(0, 119, 181, 0.5));
+}
+
+.social-icon[data-platform="discord"]:hover {
+    color: #5865F2;
+    filter: drop-shadow(0 0 8px rgba(88, 101, 242, 0.5));
+}
+
+/* Dialog System */
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.dialog-overlay.visible {
+    opacity: 1;
+}
+
+.dialog-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dialog-box {
+    background: linear-gradient(135deg, rgba(0, 50, 30, 0.95) 0%, rgba(0, 80, 40, 0.95) 100%);
+    border: 2px solid #00ff7f;
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 50px rgba(0, 255, 127, 0.4);
+    transform: scale(0.95);
+    transition: transform 0.5s ease;
+}
+
+.dialog-overlay.visible .dialog-box {
+    transform: scale(1);
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 30px 15px;
+    border-bottom: 1px solid rgba(0, 255, 127, 0.3);
+}
+
+.dialog-title {
+    font-family: 'Haksen', sans-serif;
+    font-size: 2rem;
+    color: #00ff7f;
+    margin: 0;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0, 255, 127, 0.5);
+}
+
+.dialog-close {
+    background: none;
+    border: none;
+    color: #00ff7f;
+    font-size: 2.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.dialog-close:hover {
+    background: rgba(0, 255, 127, 0.2);
+    transform: scale(1.1);
+}
+
+.dialog-content {
+    flex: 1;
+    padding: 40px 40px;
+    font-family: 'Sevastopol Interface', monospace;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.9);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 0;
+}
+
+.dialog-content p {
+    margin: 0 0 25px 0;
+    font-size: 1.6rem;
+    text-align: justify;
+    max-width: 100%;
+    word-wrap: break-word;
+    flex-shrink: 0;
+}
+
+.dialog-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Custom Green Scrollbar */
+.dialog-content::-webkit-scrollbar {
+    width: 16px;
+}
+
+.dialog-content::-webkit-scrollbar-track {
+    background: rgba(0, 20, 10, 0.8);
+    border: 1px solid rgba(0, 255, 127, 0.2);
+}
+
+.dialog-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #00ff7f 0%, #00cc66 50%, #00ff7f 100%);
+    border: 2px solid rgba(0, 50, 30, 0.8);
+    box-shadow: 0 0 10px rgba(0, 255, 127, 0.4);
+}
+
+.dialog-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #00ffaa 0%, #00dd77 50%, #00ffaa 100%);
+    box-shadow: 0 0 15px rgba(0, 255, 127, 0.6);
+}
+
+.dialog-content::-webkit-scrollbar-corner {
+    background: rgba(0, 20, 10, 0.8);
+}
+
+.dialog-footer {
+    padding: 20px 50px 30px;
+    text-align: right;
+    border-top: 1px solid rgba(0, 255, 127, 0.3);
+}
+
+.footer-text {
+    font-family: 'Haksen', sans-serif;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 2px;
+}
+
+.footer-text strong {
+    color: #00ff7f;
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px rgba(0, 255, 127, 0.6);
+    padding: 0 8px;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 8.5rem;
+    }
+    
+    .year {
+        font-size: 1rem;
+        letter-spacing: 4px;
+    }
+    
+    .title-container {
+        top: 60px;
+    }
+    
+    .start-text {
+        font-size: 1.2rem;
+        bottom: 80px;
+        padding: 12px 24px;
+    }
+    
+    .loading-text {
+        font-size: 18px;
+    }
+    
+    .loading-bar {
+        width: 250px;
+    }
+    
+    .game-menu {
+        right: 30px;
+    }
+    
+    .menu-title {
+        font-size: 2.5rem;
+        letter-spacing: 6px;
+    }
+    
+    .option-text {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+    
+    .option-number {
+        font-size: 1rem;
+    }
+    
+    .dialog-content {
+        padding: 40px 30px;
+    }
+    
+    .dialog-footer {
+        padding: 15px 30px 20px;
+    }
+    
+    .social-media {
+        bottom: 20px;
+        right: 15px;
+        gap: 15px;
+    }
+    
+    .social-icon {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 3rem;
+        letter-spacing: 13px;
+    }
+    
+    .year {
+        font-size: 0.9rem;
+        letter-spacing: 3px;
+    }
+    
+    .title-container {
+        top: 40px;
+    }
+    
+    .game-menu {
+        right: 20px;
+        top: 45%;
+    }
+    
+    .menu-title {
+        font-size: 2rem;
+        letter-spacing: 4px;
+    }
+    
+    .menu-year {
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+    }
+    
+    .option-text {
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .option-number {
+        font-size: 0.9rem;
+        min-width: 25px;
+    }
+    
+    .menu-options {
+        gap: 20px;
+    }
+    
+    .dialog-content {
+        padding: 30px 20px;
+    }
+    
+    .dialog-footer {
+        padding: 12px 20px 18px;
+    }
+    
+    .footer-text {
+        font-size: 1rem;
+    }
+    
+    .social-media {
+        bottom: 15px;
+        right: 10px;
+        gap: 12px;
+    }
+    
+    .social-icon {
+        width: 24px;
+        height: 24px;
+    }
+}
